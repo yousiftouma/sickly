@@ -8,8 +8,8 @@ jobs:
     steps:
       - checkout
       - node/with-cache:
+          working_directory: ~/webapp
           steps:
-            - run: cd webapp
             - run: npm install
             - run: npm test
 workflows:
