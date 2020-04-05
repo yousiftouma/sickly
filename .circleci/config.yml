@@ -3,12 +3,12 @@ orbs:
   node: circleci/node@1.1.6
 jobs:
   build-and-test:
+    working_directory: ~/webapp
     executor:
       name: node/default
     steps:
       - checkout
       - node/with-cache:
-          working_directory: ~/webapp
           steps:
             - run: npm install
             - run: npm test
