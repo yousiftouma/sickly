@@ -46,7 +46,7 @@ jobs:
           at: ~/sickly/webapp
       - azure-cli/install
       - run:
-          command: az storage blob upload-batch -s build -d '$AzStorageAccountContainerName' --account-name $AzStorageAccountName --account-key $AzStorageAccountKey
+          command: az storage blob upload-batch -s build -d '$web' --account-name sicklystorageaccount --account-key $AzStorageAccountKey
 
 workflows:
   version: 2
