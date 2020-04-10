@@ -30,9 +30,9 @@ jobs:
           path: ~/sickly
       - node/with-cache:
           steps:
-            - run: npm run build
             - attach_workspace:
                 at: ~/sickly/webapp
+            - run: npm run build
             - persist_to_workspace:
                 root: ~/sickly/webapp
                 paths:
