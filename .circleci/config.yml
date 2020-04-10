@@ -1,9 +1,11 @@
 version: 2.1
+
 orbs:
   node: circleci/node@1.1.6
   azure-cli: circleci/azure-cli@1.1.0
+
 jobs:
-  build-webapp:
+  build-and-test-webapp:
     working_directory: ~/sickly/webapp
     executor:
       name: node/default
@@ -13,19 +15,9 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-
-  test-webapp:
-    working_directory: ~/sickly/webapp
-    executor:
-      name: node/default
-    steps:
-      - checkout:
-          path: ~/sickly
-      - node/with-cache:
-          steps:
             - run: npm test
-  
-  build-webapp-prod:
+
+  build-and-deploy-webapp:
     working_directory: ~/sickly/webapp
     executor:
       name: node/default
@@ -35,32 +27,29 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm run build
+            - persist-to-workspace:
+                root: ~/sickly/webapp
+                paths:
+                  - build/*
 
   deploy-webapp:
-    working_directory: ~/sickly/webapp/build
     executor: azure-cli/default
     steps:
-      - checkout:
-          path: ~/sickly
+      - attach_workspace:
+          at: /build
       - azure-cli/install
       - run:
-          command: az storage blob upload-batch -s ./ -d $AzStorageAccountContainerName --account-name $AzStorageAccountName --account-key $AzStorageAccountKey
+          command: az storage blob upload-batch -s /build -d $AzStorageAccountContainerName --account-name $AzStorageAccountName --account-key $AzStorageAccountKey
 
 workflows:
   version: 2
   sickly:
     jobs:
-      - build-webapp
-      - test-webapp:
+      - build-and-test-webapp
+      - build-and-deploy-webapp:
           requires:
-            - build-webapp
-      - build-webapp-prod:
-          requires:
-            - test-webapp
+            - build-and-test-webapp
           filters:
             branches:
               only: master
-      - deploy-webapp:
-          requires:
-            - build-webapp-prod
 
