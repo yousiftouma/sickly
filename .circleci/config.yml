@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
 jobs:
-  build-and-test:
+  build-and-test-webapp:
     working_directory: ~/sickly/webapp
     executor:
       name: node/default
@@ -16,4 +16,4 @@ jobs:
 workflows:
     build-and-test:
       jobs:
-        - build-and-test
+        - build-and-test-webapp
