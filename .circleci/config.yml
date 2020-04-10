@@ -17,7 +17,7 @@ jobs:
             - run: npm install
             - run: npm test
 
-  build-and-deploy-webapp:
+  build-webapp-prod:
     working_directory: ~/sickly/webapp
     executor:
       name: node/default
@@ -27,7 +27,7 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm run build
-            - persist-to-workspace:
+            - persist_to_workspace:
                 root: ~/sickly/webapp
                 paths:
                   - build/*
@@ -46,10 +46,13 @@ workflows:
   sickly:
     jobs:
       - build-and-test-webapp
-      - build-and-deploy-webapp:
+      - build-webapp-prod:
           requires:
             - build-and-test-webapp
           filters:
             branches:
               only: master
+      - deploy-webapp:
+          requires:
+            - build-webapp-prod
 
