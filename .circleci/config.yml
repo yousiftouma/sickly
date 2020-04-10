@@ -38,6 +38,7 @@ jobs:
 
   deploy-webapp:
     working_directory: ~/sickly/webapp/build
+    executor: azure-cli/default
     steps:
       - checkout:
           path: ~/sickly
