@@ -75,11 +75,11 @@ jobs:
       - docker/build:
           image: sicklyapi
           registry: sickly.azurecr.io
-          tag: $CIRCLE_TAG
+          tag: $CIRCLE_BUILD_NUM
       - docker/push:
           image: sicklyapi
           registry: sickly.azurecr.io
-          tag: $CIRCLE_TAG
+          tag: $CIRCLE_BUILD_NUM
           digest-path: /tmp/digest.txt
       - run:
           command: |
