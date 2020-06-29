@@ -62,7 +62,7 @@ jobs:
             - ./*
       - run: dotnet test
 
-  build-and-push-api-image:
+  build-and-deploy-api-image:
     working_directory: ~/sickly/api
     executor: docker/docker
     steps:
