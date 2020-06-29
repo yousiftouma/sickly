@@ -13,7 +13,7 @@ namespace Sickly.Api.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            "Freezing", "Bracing"
         };
 
         private readonly ILogger<TestAgainController> _logger;
@@ -26,15 +26,7 @@ namespace Sickly.Api.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var rng = new Random();
-            var res = Enumerable.Range(1, 5).Select(index => new
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
-            return Ok(res);
+            return Ok(Summaries);
         }
     }
 }

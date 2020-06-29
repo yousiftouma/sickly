@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
   azure-cli: circleci/azure-cli@1.1.0
+  azure-acr: circleci/azure-acr@0.2.0
 
 jobs:
   build-and-test-webapp:
@@ -47,11 +48,29 @@ jobs:
       - azure-cli/install
       - run:
           command: az storage blob upload-batch -s build -d '$web' --account-name sicklystorageaccount --account-key $AzStorageAccountKey
+  
+  build-and-test-api:
+    working_directory: ~/sickly/api
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    steps:
+      - checkout:
+          path: ~/sickly
+      - persist_to_workspace:
+          root: ~/sickly/api
+      - run: dotnet test
+
+  # build-and-push-api-image:
+  #   working_directory: ~/sickly/api
+  #   executor: azure-acr/build-and-push-image
+
 
 workflows:
   version: 2
   sickly:
     jobs:
+      - build-and-test-api
+      # - build-and-deploy-api-image
       - build-and-test-webapp
       - build-webapp-prod:
           requires:
