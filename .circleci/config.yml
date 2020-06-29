@@ -62,9 +62,19 @@ jobs:
             - ./*
       - run: dotnet test
 
-  # build-and-push-api-image:
-  #   working_directory: ~/sickly/api
-  #   executor: azure-acr/build-and-push-image
+  build-and-push-api-image:
+    working_directory: ~/sickly/api
+    executor: azure-acr/build-and-push-image
+    steps:
+      - attach_workspace:
+          at: ~/sickly/api
+      - azure-acr/build-and-push-image
+          login-server-name: sickly.azurecr.io
+          registry-name: sickly
+          repo: sicklyapi
+          tag: $CIRCLE_TAG
+          azure-password: AcrPassword
+          azure-username: AcrUsername
 
 
 workflows:
@@ -72,7 +82,7 @@ workflows:
   sickly:
     jobs:
       - build-and-test-api
-      # - build-and-deploy-api-image
+      - build-and-deploy-api-image
       # - build-and-test-webapp
       # - build-webapp-prod:
       #     requires:
