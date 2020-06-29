@@ -58,6 +58,8 @@ jobs:
           path: ~/sickly
       - persist_to_workspace:
           root: ~/sickly/api
+          paths:
+            - ./*
       - run: dotnet test
 
   # build-and-push-api-image:
