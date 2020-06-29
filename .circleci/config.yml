@@ -66,9 +66,9 @@ jobs:
     working_directory: ~/sickly/api
     executor: docker/docker
     steps:
+      - setup_remote_docker
       - attach_workspace:
           at: ~/sickly/api
-      - setup_remote_docker
       - docker/check:
           docker-password: AcrPassword
           docker-username: AcrUsername
