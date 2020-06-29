@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
   azure-cli: circleci/azure-cli@1.1.0
-  azure-acr: circleci/azure-acr@0.2.0
+  docker: circleci/docker@1.2.1
 
 jobs:
   build-and-test-webapp:
@@ -64,17 +64,26 @@ jobs:
 
   build-and-push-api-image:
     working_directory: ~/sickly/api
-    executor: azure-acr/build-and-push-image
+    executor: docker/docker
     steps:
       - attach_workspace:
           at: ~/sickly/api
-      - azure-acr/build-and-push-image
-          login-server-name: sickly.azurecr.io
-          registry-name: sickly
-          repo: sicklyapi
+      - docker/check:
+          docker-password: AcrPassword
+          docker-username: AcrUsername
+          registry: sickly.azurecr.io
+      - docker/build:
+          image: sicklyapi
+          registry: sickly.azurecr.io
           tag: $CIRCLE_TAG
-          azure-password: AcrPassword
-          azure-username: AcrUsername
+      - docker/push:
+          image: sicklyapi
+          registry: sickly.azurecr.io
+          tag: $CIRCLE_TAG
+          digest-path: /tmp/digest.txt
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
 
 
 workflows:
@@ -83,6 +92,8 @@ workflows:
     jobs:
       - build-and-test-api
       - build-and-deploy-api-image
+          requires:
+            - build-and-test-api
       # - build-and-test-webapp
       # - build-webapp-prod:
       #     requires:
