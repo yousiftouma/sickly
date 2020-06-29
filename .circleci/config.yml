@@ -91,7 +91,7 @@ workflows:
   sickly:
     jobs:
       - build-and-test-api
-      - build-and-deploy-api-image
+      - build-and-deploy-api-image:
           requires:
             - build-and-test-api
       # - build-and-test-webapp
