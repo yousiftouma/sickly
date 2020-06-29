@@ -73,14 +73,14 @@ workflows:
     jobs:
       - build-and-test-api
       # - build-and-deploy-api-image
-      - build-and-test-webapp
-      - build-webapp-prod:
-          requires:
-            - build-and-test-webapp
-          filters:
-            branches:
-              only: master
-      - deploy-webapp:
-          requires:
-            - build-webapp-prod
+      # - build-and-test-webapp
+      # - build-webapp-prod:
+      #     requires:
+      #       - build-and-test-webapp
+      #     filters:
+      #       branches:
+      #         only: master
+      # - deploy-webapp:
+      #     requires:
+      #       - build-webapp-prod
 
