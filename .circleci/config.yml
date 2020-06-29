@@ -68,6 +68,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/sickly/api
+      - setup_remote_docker
       - docker/check:
           docker-password: AcrPassword
           docker-username: AcrUsername
