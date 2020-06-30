@@ -4,7 +4,8 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 # this should not run on a specific branch
-trigger: none
+trigger:
+  - master
 
 # but on all PRs to master
 pr:
