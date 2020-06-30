@@ -17,6 +17,8 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
+  workingDirectory: ./api
   displayName: 'dotnet build $(buildConfiguration)'
 - script: dotnet test --configuration $(buildConfiguration)
+  workingDirectory: ./api
   displayName: 'dotnet test $(buildConfiguration)'
