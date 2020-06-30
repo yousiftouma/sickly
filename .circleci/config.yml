@@ -48,61 +48,19 @@ jobs:
       - azure-cli/install
       - run:
           command: az storage blob upload-batch -s build -d '$web' --account-name sicklystorageaccount --account-key $AzStorageAccountKey
-  
-  build-and-test-api:
-    working_directory: ~/sickly/api
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
-    steps:
-      - checkout:
-          path: ~/sickly
-      - persist_to_workspace:
-          root: ~/sickly/api
-          paths:
-            - ./*
-      - run: dotnet test
-
-  build-and-deploy-api-image:
-    working_directory: ~/sickly/api
-    executor: docker/docker
-    steps:
-      - setup_remote_docker
-      - attach_workspace:
-          at: ~/sickly/api
-      - docker/check:
-          docker-password: AcrPassword
-          docker-username: AcrUsername
-          registry: sickly.azurecr.io
-      - docker/build:
-          image: sicklyapi
-          registry: sickly.azurecr.io
-          tag: $CIRCLE_BUILD_NUM
-      - docker/push:
-          image: sicklyapi
-          registry: sickly.azurecr.io
-          tag: $CIRCLE_BUILD_NUM
-          digest-path: /tmp/digest.txt
-      - run:
-          command: |
-            echo "Digest is: $(</tmp/digest.txt)"
-
 
 workflows:
   version: 2
   sickly:
     jobs:
-      - build-and-test-api
-      - build-and-deploy-api-image:
+      - build-and-test-webapp
+      - build-webapp-prod:
           requires:
-            - build-and-test-api
-      # - build-and-test-webapp
-      # - build-webapp-prod:
-      #     requires:
-      #       - build-and-test-webapp
-      #     filters:
-      #       branches:
-      #         only: master
-      # - deploy-webapp:
-      #     requires:
-      #       - build-webapp-prod
+            - build-and-test-webapp
+          filters:
+            branches:
+              only: master
+      - deploy-webapp:
+          requires:
+            - build-webapp-prod
 
