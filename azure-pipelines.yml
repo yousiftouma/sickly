@@ -10,15 +10,48 @@ pr:
   - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Azure Pipelines'
 
-variables:
-  buildConfiguration: 'Release'
+jobs:
+  - job: A
+    displayName: 'Build and test project'
+    workspace:
+      clean: all
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: 'Restore packages'
+        inputs:
+          command: restore
+          projects: 'api/*.csproj'
 
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: ./api
-  displayName: 'dotnet build $(buildConfiguration)'
-- script: dotnet test --configuration $(buildConfiguration)
-  workingDirectory: ./api
-  displayName: 'dotnet test $(buildConfiguration)'
+      - task: DotNetCoreCLI@2
+        displayName: 'Run tests'
+        inputs:
+          command: test
+          projects: 'api/*.csproj'
+          testRunTitle: 'run tests'
+          arguments: '--no-restore'
+
+  - job: B
+    displayName: 'Build and push image'
+    dependsOn: A
+    condition: and(succeeded(A), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    steps:
+      - task: Docker@1
+        displayName: 'Build an image'
+        inputs:
+          azureSubscriptionEndpoint: 'sickly - Azure'
+          azureContainerRegistry: sickly.azurecr.io
+          dockerFile: api/Dockerfile
+          imageName: 'sickly.azurecr.io/sickly7ab5:$(Build.BuildId)'
+          useDefaultContext: false
+          buildContext: api
+
+      - task: Docker@1
+        displayName: 'Push an image'
+        inputs:
+          azureSubscriptionEndpoint: 'sickly - Azure'
+          azureContainerRegistry: sickly.azurecr.io
+          command: 'Push an image'
+          imageName: 'sickly.azurecr.io/sickly7ab5:$(Build.BuildId)'
+  
