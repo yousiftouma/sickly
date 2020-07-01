@@ -9,7 +9,7 @@ pr: # run on all PRs
     - '*'  # must quote since "*" is a YAML reserved character; we want a string
 
 pool:
-  name: 'Azure Pipelines'
+  vmImage: 'ubuntu-latest'
 
 jobs:
   - job: 'A'
