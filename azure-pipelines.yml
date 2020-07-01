@@ -1,51 +1,50 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+# Run CI/CD for API on Azure Pipelines
 
-trigger:
+trigger: # only run on commits to master
   - master
 
-pr:
-  - master
+pr: # run on all PRs
+  branches:
+    include:
+    - '*'  # must quote since "*" is a YAML reserved character; we want a string
 
 pool:
   name: 'Azure Pipelines'
 
 jobs:
-  - job: A
+  - job: 'A'
     displayName: 'Build and test project'
     workspace:
-      clean: all
+      clean: 'all'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'Restore packages'
         inputs:
-          command: restore
+          command: 'restore'
           projects: 'api/*.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'Run tests'
         inputs:
-          command: test
+          command: 'test'
           projects: 'api/*.csproj'
           testRunTitle: 'run tests'
           arguments: '--no-restore'
 
-  - job: B
+  - job: 'B'
     displayName: 'Build and push image'
-    dependsOn: A
-    condition: and(succeeded(A), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    dependsOn: 'A'
+    condition: and(succeeded('A'), eq(variables['build.sourceBranch'], 'refs/heads/master')) # Only build image on master
     steps:
       - task: Docker@1
         displayName: 'Build an image'
         inputs:
           azureSubscriptionEndpoint: 'sickly - Azure'
-          azureContainerRegistry: sickly.azurecr.io
-          dockerFile: api/Dockerfile
+          azureContainerRegistry: 'sickly.azurecr.io'
+          dockerFile: 'api/Dockerfile'
           imageName: 'sickly.azurecr.io/sickly7ab5:$(Build.BuildId)'
           useDefaultContext: false
-          buildContext: api
+          buildContext: 'api'
 
       - task: Docker@1
         displayName: 'Push an image'
