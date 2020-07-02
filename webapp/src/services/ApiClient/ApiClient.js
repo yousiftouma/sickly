@@ -14,7 +14,7 @@ async function get(route, id = null, queryParams = null) {
             .join('&')}`
         : '';
     
-    let idString = id !== null ? id : ''
+    let idString = id !== null ? id : '';
 
     const request = new Request(
         `${config.apiUrl}/${route}/${idString}${queryParamString}`,

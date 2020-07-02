@@ -7,7 +7,7 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await get('test', '');
+      const response = await get('test');
       if (response) {
         setData(response);
       };
