@@ -46,8 +46,10 @@ jobs:
       - attach_workspace:
           at: ~/sickly/webapp
       - azure-cli/install
-      - run:
-          command: az storage blob upload-batch -s build -d '$web' --account-name sicklystorageaccount --account-key $AzStorageAccountKey
+      - run: # delete existing files since file names are hashed
+          command: az storage blob delete-batch --account-name sicklystorageaccount --account-key $AzStorageAccountKey -s '$web'
+      - run: # upload all files except map files
+          command: az storage blob upload-batch -s build -d '$web' --account-name sicklystorageaccount --account-key $AzStorageAccountKey --pattern '*[!.map]'
 
 workflows:
   version: 2
@@ -63,4 +65,3 @@ workflows:
       - deploy-webapp:
           requires:
             - build-webapp-prod
-
