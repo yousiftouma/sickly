@@ -16,7 +16,7 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: npm test --passWithNoTests
+            - run: npm test
             - persist_to_workspace:
                 root: ~/sickly/webapp
                 paths:
