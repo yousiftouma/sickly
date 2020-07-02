@@ -16,8 +16,7 @@ namespace Sickly.Api
 
         public IConfiguration Configuration { get; }
 
-        private readonly string DevCors = "devCors";
-        private readonly string ProdCors = "prodCors";
+        private readonly string _corsPolicy = "corsPolicy";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -25,14 +24,11 @@ namespace Sickly.Api
             services.AddControllers();
 
             services.AddCors(options => {
-                options.AddPolicy(name: DevCors, builder => {
-                    builder.WithOrigins("http://localhost:3000");
-                });
-            });
-
-            services.AddCors(options => {
-                options.AddPolicy(name: ProdCors, builder => {
-                    builder.WithOrigins("https://sickly.se", "https://www.sickly.se");
+                options.AddPolicy(name: _corsPolicy, builder => {
+                    builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin();
                 });
             });
             
@@ -55,15 +51,15 @@ namespace Sickly.Api
                 app.UseSwaggerUI(c => {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sickly API v1");
                 });
-
-                app.UseCors(DevCors);
             }
-
-            app.UseHttpsRedirection();
+            else if (env.IsProduction()) 
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 
-            app.UseCors(ProdCors);
+            app.UseCors(_corsPolicy);
 
             app.UseAuthorization();
 

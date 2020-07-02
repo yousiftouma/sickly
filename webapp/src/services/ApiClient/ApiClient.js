@@ -3,19 +3,21 @@ import config from '../../config';
 /**
  * Gets data from the API.
  * @param {*} route The route of the action
- * @param {*} id The id of the resource
+ * @param {*} id Optional id of the resource
  * @param {*} queryParams Optional query params
  */
-async function get(route, id, queryParams = null) {
+async function get(route, id = null, queryParams = null) {
     let queryParamString =
       queryParams !== null
         ? `?${Object.keys(queryParams)
             .map((key) => key + '=' + encodeURIComponent(queryParams[key]))
             .join('&')}`
-        : null;
+        : '';
+    
+    let idString = id !== null ? id : ''
 
     const request = new Request(
-        `${config.apiUrl + route}/${id}${queryParamString !== null ? queryParamString : ''}`,
+        `${config.apiUrl}/${route}/${idString}${queryParamString}`,
         {
             method: 'GET',
         }
