@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
 namespace Sickly.Api
 {
@@ -21,6 +23,13 @@ namespace Sickly.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Setting configuration for protected web api
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddProtectedWebApi(Configuration);
+
+            services.AddAuthorization();
+
             services.AddControllers();
 
             services.AddCors(options => {
@@ -54,15 +63,14 @@ namespace Sickly.Api
             }
             else if (env.IsProduction()) 
             {
-                app.UseHttpsRedirection();
+                app.UseHsts();
             }
 
-            app.UseRouting();
-
             app.UseCors(_corsPolicy);
-
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

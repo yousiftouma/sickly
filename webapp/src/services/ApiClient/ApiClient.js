@@ -1,5 +1,5 @@
-import config from '../../config';
-
+import { apiConfig } from '../../config';
+import { getToken } from '../Auth/AuthService';
 /**
  * Gets data from the API.
  * @param {*} route The route of the action
@@ -7,6 +7,10 @@ import config from '../../config';
  * @param {*} queryParams Optional query params
  */
 async function get(route, id = null, queryParams = null) {
+    const token = getToken();
+    console.log('token:');
+    console.log(token);
+
     let queryParamString =
       queryParams !== null
         ? `?${Object.keys(queryParams)
@@ -16,15 +20,20 @@ async function get(route, id = null, queryParams = null) {
     
     let idString = id !== null ? id : '';
 
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer + ${token}`);
+
     const request = new Request(
-        `${config.apiUrl}/${route}/${idString}${queryParamString}`,
+        `${apiConfig.apiUrl}/${route}/${idString}${queryParamString}`,
         {
             method: 'GET',
+            headers: headers,
         }
     );
 
     try {
         const response = await fetch(request);
+        console.log('log in api client:');
         console.log(response);
         if (response.ok) {
             return response.json();
@@ -33,6 +42,7 @@ async function get(route, id = null, queryParams = null) {
             throw new Error('Request got non-ok response');
         }
     } catch (error) {
+        console.log('log in api client catch:')
         console.error('Got error in get request', error);
     };
 };
